@@ -6,8 +6,16 @@ import FreetCollection from '../freet/collection';
  * Checks if a freet with freetId is req.params exists
  */
 const isFreetExists = async (req: Request, res: Response, next: NextFunction) => {
-  const validFormat = Types.ObjectId.isValid(req.params.freetId);
-  const freet = validFormat ? await FreetCollection.findOne(req.params.freetId) : '';
+  var freetId= req.params.freetId;
+  if (!freetId){ 
+    freetId = req.query.freetId as string;
+  }
+  if (!freetId){ 
+    freetId = req.body.freetId as string;
+  }
+  // console.log("our freet id is", freetId);
+  const validFormat = Types.ObjectId.isValid(freetId);
+  const freet = validFormat ? await FreetCollection.findOne(freetId) : '';
   if (!freet) {
     res.status(404).json({
       error: `Freet with freet ID ${req.params.freetId} does not exist.`
@@ -45,7 +53,14 @@ const isValidFreetContent = (req: Request, res: Response, next: NextFunction) =>
  * Checks if the current user is the author of the freet whose freetId is in req.params
  */
 const isValidFreetModifier = async (req: Request, res: Response, next: NextFunction) => {
-  const freet = await FreetCollection.findOne(req.params.freetId);
+  var freetId= req.params.freetId;
+  if (!freetId){ 
+    freetId = req.query.freetId as string;
+  }
+  if (!freetId){ 
+    freetId = req.body.freetId as string;
+  }
+  const freet = await FreetCollection.findOne(freetId);
   const userId = freet.authorId._id;
   if (req.session.userId !== userId.toString()) {
     res.status(403).json({

@@ -4,29 +4,10 @@ import FreetCollection from '../freet/collection';
 import UserCollection from './collection';
 import * as userValidator from '../user/middleware';
 import * as util from './util';
+import ReactionCollection from '../reaction/collection';
+import CommentCollection from '../comment/collection';
 
 const router = express.Router();
-
-/**
- * Get the signed in user
- * TODO: may need better route and documentation
- * (so students don't accidentally delete this when copying over)
- *
- * @name GET /api/users/session
- *
- * @return - currently logged in user, or null if not logged in
- */
-router.get(
-  '/session',
-  [],
-  async (req: Request, res: Response) => {
-    const user = await UserCollection.findOneByUserId(req.session.userId);
-    res.status(200).json({
-      message: 'Your session info was found successfully.',
-      user: user ? util.constructUserResponse(user) : null
-    });
-  }
-);
 
 /**
  * Sign in user.
@@ -162,6 +143,8 @@ router.delete(
     const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn
     await UserCollection.deleteOne(userId);
     await FreetCollection.deleteMany(userId);
+    await CommentCollection.deleteMany(userId);
+    await ReactionCollection.deleteByUser(userId);
     req.session.userId = undefined;
     res.status(200).json({
       message: 'Your account has been deleted successfully.'
