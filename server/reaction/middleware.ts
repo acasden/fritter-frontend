@@ -7,13 +7,17 @@ import ReactionCollection from './collection';
  */
 const isReactionExists = async (req: Request, res: Response, next: NextFunction) => {
   var reactId= req.body.reactionId;
+  console.log("isreactionexists");
+  console.log(reactId);
   if (reactId == undefined){
     console.log(req.body, req.params, req.query);
     reactId =req.params.reactionId;
   }
   console.log(reactId);
   const validFormat = Types.ObjectId.isValid(reactId);
+  console.log(validFormat);
   const reaction = validFormat ? await ReactionCollection.findOne(reactId) : '';
+  console.log(reaction);
   if (!reaction) {
     res.status(404).json({
       error: {
@@ -22,7 +26,7 @@ const isReactionExists = async (req: Request, res: Response, next: NextFunction)
     });
     return;
   }
-
+  console.log("passed isreactionexists");
   next();
 };
 
@@ -31,7 +35,9 @@ const isReactionExists = async (req: Request, res: Response, next: NextFunction)
  * Checks if the current user is the author of the reaction whose reactionId is in req.params
  */
 const isValidReactionModifier = async (req: Request, res: Response, next: NextFunction) => {
-  const reaction = await ReactionCollection.findOne(req.params.reactionId);
+  console.log("isvalidreactionmodifier");
+  var reactId=  req.params.reactionId? req.params.reactionId : req.body.reactionId;
+  const reaction = await ReactionCollection.findOne(reactId);
   if (!reaction) { //check reaction exists
     res.status(404).json({
       error: {
@@ -40,6 +46,7 @@ const isValidReactionModifier = async (req: Request, res: Response, next: NextFu
     });
     return;
   }
+  console.log("validreaction modifer confirmed that reaction exists")
   const userId = reaction.UserId._id;
   if (req.session.userId !== userId.toString()) { // check user is the one who made reaction
     res.status(403).json({
@@ -49,6 +56,7 @@ const isValidReactionModifier = async (req: Request, res: Response, next: NextFu
   }
 
   next();
+  console.log("passed isvalidreactionmodifier");
 };
 /**
  * Checks if the reaction is a valid option (-1, 0, 1)
@@ -56,9 +64,11 @@ const isValidReactionModifier = async (req: Request, res: Response, next: NextFu
  * Raises error 403 if not 
  */
 const isValidReaction =async (req: Request, res:Response, next: NextFunction) => {
-  // console.log(req.param);
-  // console.log(req.body);
-  const input = req.body.vote;
+  console.log("isValidReaction");
+  console.log(req.param);
+  console.log(req.body);
+  console.log(req.query);
+  const input = req.body.vote? req.body.vote : req.query.vote;
   console.log('input', input);
   // console.log(req.params);
   // console.log(parseInt(input));

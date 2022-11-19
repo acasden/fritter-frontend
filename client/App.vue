@@ -60,7 +60,7 @@ main {
 .alerts article {
     border-radius: 5px;
     padding: 10px 20px;
-    color: #fff;
+    color: rgb(159, 160, 219);
 }
 
 .alerts p {

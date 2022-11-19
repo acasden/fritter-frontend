@@ -38,11 +38,14 @@
             placeholder="🔍 Filter by author (optional)"
             button="🔄 Get freets"
           />
+          <!-- TODO: Cancel/Clear form to stop searching -->
         </div>
       </header>
+      <!-- UNDER HERE IS WHERE WE ACTUALLY VIEW THE FREETS -->
       <section
         v-if="$store.state.freets.length"
       >
+      <!--    TODO: Is this where I add in reaction? :rection="reaction" ????? -->
         <FreetComponent
           v-for="freet in $store.state.freets"
           :key="freet.id"

@@ -32,7 +32,7 @@ router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
     // Check if freetId query parameter was supplied
-    console.log("getting reaction");
+    // console.log("getting reaction");
     if (req.query.freetId !== undefined) {
       next();
       return;
@@ -47,11 +47,33 @@ router.get(
   [
     freetValidator.isFreetExists //make sure freet exist
   ],
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response, next: NextFunction) => {
+    if(req.query.one !== undefined){ //looking for single reaction
+      next();
+      return;
+    }
+    //find all reactions for this freet
     const freetReactions = await ReactionCollection.findAllByFreetId(req.query.freetId as string);
     console.log("there's a freet, looking at it's reactions", freetReactions);
     const response = freetReactions.map(util.constructReactionResponse);
     res.status(200).json(response);
+  },
+  [
+    userValidator.isUserLoggedIn
+  ],
+  async (req: Request, res: Response, next: NextFunction) => {
+    const userId = (req.session.userId as string) ?? ''; // Will not be an empty string since its validated in isUserLoggedIn 
+    const freetId = req.query.freetId as string;
+    const freetReaction = await ReactionCollection.findOneByUserAndFreet(userId, freetId);
+    // console.log("there's a freet and user is logged in, looking for reactions", freetReaction);
+    if (freetReaction == null){
+      // const response = "There is no Reaction on this freet by the signed in user";
+      const response = {userId, freetId, vote:0};
+      res.status(201).json(response);
+    }
+    else{const response = util.constructReactionResponse(freetReaction);
+    res.status(200).json(response);}
+    
   }
 );
 
@@ -115,11 +137,12 @@ router.get(
  */
 router.delete(
   '/:reactionId?',
-  // async (req: Request, res: Response, next:NextFunction) => {
-  //   console.log(req.params);
-  //   next();
-  //   return
-  // },
+  async (req: Request, res: Response, next:NextFunction) => {
+    console.log("we're in the delete router lets go");
+    console.log(req.params);
+    next();
+    return
+  },
   [
     userValidator.isUserLoggedIn,
     reactionValidator.isReactionExists,
@@ -136,7 +159,7 @@ router.delete(
 /**
  * Modify a reaction
  *
- * @name PUT /api/reactions/:id
+ * @name PATCH /api/reactions/:id
  *
  * @param {string} content - the new content for the reaction
  * @return {ReactionResponse} - the updated reaction
@@ -146,8 +169,16 @@ router.delete(
  * @throws {400} - If the reaction content is empty or a stream of empty spaces
  * @throws {413} - If the reaction content is more than 140 characters long
  */
-router.put(
+router.patch(
   '/:reactionId?',
+  async (req: Request, res: Response, next:NextFunction) => {
+    console.log("we're in the patch router lets go");
+    console.log(req.params);
+    console.log(req.body);
+    console.log(req.query);
+    next();
+    return
+  },
   [
     userValidator.isUserLoggedIn,
     reactionValidator.isReactionExists,
@@ -155,7 +186,9 @@ router.put(
     reactionValidator.isValidReaction
   ],
   async (req: Request, res: Response) => {
-    const reaction = await ReactionCollection.updateOne(req.params.reactionId, req.body.content);
+    console.log(req.body.vote);
+    const reactionId = (req.body.reactionId)? req.body.reactionId : req.params.reactionId;
+    const reaction = await ReactionCollection.updateOne(reactionId, req.body.vote);
     console.log("changing reaction");
     res.status(200).json({
       message: 'Your reaction was updated successfully.',
