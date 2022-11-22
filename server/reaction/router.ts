@@ -188,6 +188,12 @@ router.patch(
   async (req: Request, res: Response) => {
     console.log(req.body.vote);
     const reactionId = (req.body.reactionId)? req.body.reactionId : req.params.reactionId;
+    if (reactionId.vote ==1){
+      const vote = -1;
+    }
+    else{
+      const vote = 1;
+    }
     const reaction = await ReactionCollection.updateOne(reactionId, req.body.vote);
     console.log("changing reaction");
     res.status(200).json({

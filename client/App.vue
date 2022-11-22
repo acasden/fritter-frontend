@@ -31,9 +31,11 @@ export default {
 <style>
 * {
   box-sizing: border-box;
+  /* background-color: #AADADD; */
 }
 
 body {
+  background-color: #FEFED2;
   height: 100vh;
   flex-direction: column;
   display: flex;
@@ -44,6 +46,7 @@ body {
 
 main {
   padding: 0 5em 5em;
+  font-size: large;
 }
 
 .alerts {
@@ -60,7 +63,7 @@ main {
 .alerts article {
     border-radius: 5px;
     padding: 10px 20px;
-    color: rgb(159, 160, 219);
+    color: rgb(0, 0, 0);
 }
 
 .alerts p {
@@ -68,10 +71,10 @@ main {
 }
 
 .alerts .error {
-    background-color: rgb(166, 23, 33);
+    background-color: rgb(203, 203, 203);
 }
 
 .alerts .success {
-    background-color: rgb(45, 135, 87);
+    background-color: rgb(255, 255, 255);
 }
 </style>

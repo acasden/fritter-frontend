@@ -13,7 +13,7 @@ const routes = [
   {path: '/account', name: 'Account', component: AccountPage},
   {path: '/login', name: 'Login', component: LoginPage},
   {path: '*', name: 'Not Found', component: NotFound},
-  {path: '/comment', name: 'Comment', component: CommentsPage}
+  {path: '/comments/:freetId', name: 'CommentsPage', component: CommentsPage}
 ];
 
 const router = new VueRouter({routes});

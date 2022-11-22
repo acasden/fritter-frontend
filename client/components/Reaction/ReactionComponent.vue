@@ -7,17 +7,9 @@
     > -->
        
       <div>
-        <button
+        <!-- <button
         @click="getUsersReaction"> This button is temporary </button>
-        {{reactionId}}
-        <i v-if="userReaction === 1">
-        <button class = "darkButton"
-        @click="ReactUp"> ⬆️ </button>
-        </i>
-      <i v-else>
-            <button
-        @click="ReactUp"> ⬆️ </button>
-      </i>
+        {{reactionId}} -->
       
       <i v-if="userReaction ===-1">
       <button class = "darkButton"
@@ -27,7 +19,18 @@
             <button
         @click="ReactDown"> ⬇️ </button>
       </i>
-        <i v-if="userReaction !== 0">(current reaction is {{userReaction}})</i>
+
+        <i v-if="userReaction === 1">
+        <button class = "darkButton"
+        @click="ReactUp"> ⬆️ </button>
+        </i>
+      <i v-else>
+            <button
+        @click="ReactUp"> ⬆️ </button>
+      </i>
+
+      <!-- <i v-if="userReaction !== 0">(current reaction is {{userReaction}})</i> -->
+
       </div>
       
     <!-- </article> -->
@@ -82,23 +85,30 @@
         console.log("React up");
         console.log("previous reaction: ", this.userReaction);
         if(this.userReaction==1){ //case deleting reaction
+          this.userReaction=0;
           this.deleteReaction();
         }
         else if(this.userReaction==-1){ //case switching reactions
+          this.userReaction=1;
           this.changeReaction(1);
         }
         else{this.addReaction(1);} //case new reaction
+        this.userReaction=1;
         console.log("reaction should be added now");
       },
       ReactDown(){
         console.log("react down");
         if(this.userReaction==-1){ //case deleting reaction -1 => 0
+          this.userReaction=0;
           this.deleteReaction();
         }
         else if(this.userReaction==1){ //case changing reaction 1 => -1
+          this.userReaction=-1;
           this.changeReaction(-1);
         }
-        else{this.addReaction(-1);} //case adding reaction 0 => -1
+        else{
+          this.userReaction = -1;
+          this.addReaction(-1);} //case adding reaction 0 => -1
       },
       async changeReaction(vote){
         console.log("changereaction value ", vote);

@@ -42,7 +42,7 @@
 <style scoped>
 nav {
     padding: 1vw 2vw;
-    background-color: #ccc;
+    background-color: #D2FEFE;
     display: flex;
     justify-content: space-between;
     align-items: center;

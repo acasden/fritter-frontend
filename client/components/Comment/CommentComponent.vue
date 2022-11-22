@@ -5,6 +5,9 @@
       class="comment"
     >
       <header>
+        <h3 class="author">
+        @{{ comment.author }}
+      </h3>
         <div
           v-if="$store.state.username === comment.author"
           class="actions"
@@ -14,9 +17,7 @@
           </button>
         </div>
       </header>
-      <textarea
-        class="content"
-      />
+
       <p>
         {{ comment.content }}
       </p>
@@ -45,12 +46,13 @@
   export default {
     name: 'CommentComponent',
     // components: {ReactionComponent},
-    props: 
+    props: {
       // Data from the stored comment
       comment: {
         type: Object,
         required: true
-      }
+      },
+      alerts:  {}
     },
     data() {
       return {
@@ -58,7 +60,7 @@
       };
     },
     methods: {
-      deleteCommment() {
+      deleteComment() {
         /**
          * Deletes this comment.
          */

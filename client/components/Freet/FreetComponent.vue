@@ -4,64 +4,66 @@
   <article
     class="freet"
   >
+    <!-- author and delete -->
     <header>
+      <div>
       <h3 class="author">
         @{{ freet.author }}
-      </h3>
-      <div
+        <div
         v-if="$store.state.username === freet.author"
         class="actions"
       >
-      
-      
-        <!-- <button
-          v-if="editing"
-          @click="submitEdit"
-        >
-          ✅ Save changes
-        </button>
-        <button
-          v-if="editing"
-          @click="stopEditing"
-        >
-          🚫 Discard changes
-        </button> -->
-        <!-- <button
-          v-if="!editing"
-          @click="startEditing"
-        >
-          ✏️ Edit
-        </button> -->
         <button @click="deleteFreet">
-          🗑️ Delete
+          🗑️ Delete Freet
         </button>
       </div>
+      </h3>
+
+      
+      <!-- FLAG COMPONENT GOES HERE -->
+      
+      <!-- ability to delete freets -->
+      
+
+      <FlagComponent 
+          :freet = "freet"
+          >
+        </FlagComponent>
+    </div>
     </header>
-    <textarea
-      v-if="editing"
-      class="content"
-      :value="draft"
-      @input="draft = $event.target.value"
-    />
-    <p
-      v-else
-      class="content"
-    >
-      {{ freet.content }}
-    </p>
+    <!-- content and info-->
+
     <p class="info">
       Posted at {{ freet.dateModified }}
       <i v-if="freet.edited">(edited)</i>
     </p>
+
+    <!-- bottom of freet (reaction + comments) -->
     <div>
-      
-        
+      <b-container>
+        <div class = "left_child">
+      <!-- Reaction -->
     <ReactionComponent
         :freet="freet"
     />
+      </div>
+
+        <div>
+    <!-- Comments -->
+
+    <router-link 
+      :to="{path:`/comments/${freet._id}`, params:{freet:freet}}"
+      custom
+      v-slot="{ navigate }">
+      <button 
+        @click = "navigate" 
+        role = "link">
+        View Comments
+      </button> </router-link>
     </div>
-    <!-- <button -->
-      <!-- @click="ViewComments">View Comments</button> -->
+    </b-container>
+
+    </div>
     <section class="alerts">
       <article
         v-for="(status, alert, index) in alerts"
@@ -76,10 +78,11 @@
 
 <script>
 import ReactionComponent from "@/components/Reaction/ReactionComponent.vue";
+import FlagComponent from "@/components/Flag/FlagComponent.vue";
 
 export default {
   name: 'FreetComponent',
-  components: {ReactionComponent},
+  components: {ReactionComponent, FlagComponent,},
   props: {
     // Data from the stored freet
     freet: {
@@ -95,88 +98,11 @@ export default {
     return {
       editing: false, // Whether or not this freet is in edit mode
       draft: this.freet.content, // Potentially-new content for this freet
-      alerts: {}, // Displays success/error messages encountered during freet modification
-      user_reactions: 0 //Value of current user's reactions
+      alerts: {}, // Displays success/error messages encountered during freet modification,
+      flagged: false
     };
   },
   methods: {
-    async getUsersReaction(){
-      const freetId = this.freet._id; //todo make sure this is good
-      const username = store.state.username; 
-      const params = {
-        method: 'GET',
-        message: 'Getting a specific users reaction on a specific freet',
-        body: JSON.stringify({one:True, freetId} ),
-        callback: () => {
-          this.$set(this.alerts, params.message, 'success');
-          
-          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
-        }
-      };
-      response = await fetch(`/api/reactions/?freetId=${fields.reactionId}`, {method: 'DELETE'})
-      user_reactions = await response.json();
-      this.user_reactions = user_reactions.reaction;
-    },
-    ReactUp(){
-      console.log("React up");
-      console.log("previous reaction: ", this.user_reactions);
-      if(this.user_reactions==1){ //case deleting reaction
-        this.deleteReaction();
-      }
-      else if(this.user_reactions==-1){ //case switching reactions
-        this.changeReaction(1);
-      }
-      else{this.addReaction(1);} //case new reaction
-      console.log("reaction should be added now");
-    },
-    ReactDown(){
-      console.log("react down");
-      if(this.user_reactions==-1){ //case deleting reaction -1 => 0
-        this.deleteReaction();
-      }
-      else if(this.user_reactions==1){ //case changing reaction 1 => -1
-        this.changeReaction();
-      }
-      else{this.addReaction(-1);} //case adding reaction 0 => -1
-    },
-    async changeReaction(){
-      if(this.user_reactions==-1){
-        //change from -1 to 1
-      }
-      else if(this.user_reactions==1){
-        //change from 1 to -1
-      }
-
-    },
-    async addReaction(value){
-      console.log("addReaction value ", value);
-      const freetId = this.freet._id;
-      const params = {
-        method: 'POST',
-        message: 'Successfully changed from downvote to upvote!',
-        body: JSON.stringify({freetId, value}),
-        callback: () => {
-          this.$set(this.alerts, params.message, 'success');
-          setTimeout(() => this.$delete(this.alerts, params.message), 3000);
-        }
-      };
-      console.log("params", params);
-      this.reactRequest(params);
-      this.user_reactions=1;
-      
-    },
-    async deleteReaction(){
-      response = fetch(`/api/reactions/${fields.reactionId}`, {method: 'DELETE'})
-      const params = {
-        method: 'DELETE',
-        callback: () => {
-          this.$store.commit('alert', {
-            message: 'Successfully deleted reaction!', status: 'success'
-          });
-        }
-      };
-      this.request(params);
-    },
     startEditing() {
       /**
        * Enables edit mode on this freet.
@@ -258,45 +184,37 @@ export default {
         setTimeout(() => this.$delete(this.alerts, e), 3000);
       }
     },
-    async reactRequest(params) {
-      /**
-       * Submits a request to the freet's endpoint
-       * @param params - Options for the request
-       * @param params.body - Body for the request, if it exists
-       * @param params.callback - Function to run if the the request succeeds
-       */
-      const options = {
-        method: params.method, headers: {'Content-Type': 'application/json'}
-      };
-      if (params.body) {
-        options.body = params.body;
-      }
-
-      try {
-        console.log("fetching reactions");
-        const r = await fetch(`/api/reactions/${this.freet._id}`, options);
-        if (!r.ok) {
-          const res = await r.json();
-          throw new Error(res.error);
-        }
-
-        this.editing = false;
-        this.$store.commit('refreshFreets');
-
-        params.callback();
-      } catch (e) {
-        this.$set(this.alerts, e, 'error');
-        setTimeout(() => this.$delete(this.alerts, e), 3000);
-      }
-    }
   }
 };
 </script>
 
 <style scoped>
+
+/* border-radius rounds corners, border is outline, padding gives space between content and border */
 .freet {
+    background-color: #FED2FE;
     border: 1px solid #111;
+    border-radius: 15px;
     padding: 20px;
     position: relative;
+    margin: 2px;
+    color: rgb(0, 0, 0);
+    font-size: larger;
+    /* -webkit-text-stroke-width: 0.5px; */
+    /* -webkit-text-stroke-color: rgb(255, 255, 255); */
+
+}
+.left_child{
+    float: left;
+    padding-left: 10px;
+    padding-right:10px;
+}
+.right_child{
+    float: right;
+    padding-right: 10px;
+}
+
+.actions{
+    float: right
 }
 </style>

@@ -1,59 +1,116 @@
 <!-- Default page that also displays freets -->
 
 <template>
+    <article
+      class="comments"
+    >
   <main>
     
     <section>
+        <section>
       <header>
         <div class="left">
           <h2>
             Viewing Comment under Freet
-            <FreetComponent
-                :key="freet.id"
-                :freet="freet"
-            ></FreetComponent>
+            <FreetForCommentComponent
+            :key="freet.id"
+            :freet="freet"
+            />
+            
           </h2>
         </div>
       </header>
+    </section>
       <!-- UNDER HERE IS WHERE WE ACTUALLY VIEW THE FREETS -->
-      <section
-        v-if="$store.state.freets.length" 
+      <section 
       >
-        <!-- <CommentComponent
-          v-for="comment in $store.state.freets"
+            <!-- <CommentComponent
+                :freetId="$router.params.freetId"
+            ></CommentComponent> -->
+        <CommentComponent
+          v-for="comment in comments"
           :key="comment.id"
           :comment="comment"
-        /> -->
+        />
       </section>
-      <article
-        v-else
-      >
-        <h3>No comments found.</h3>
-      </article>
+
     </section>
   </main>
+  </article>
 </template>
 
 <script>
-// import CommentComponent from '@/components/Comment/CommentComponent.vue';
+import CommentComponent from '@/components/Comment/CommentComponent.vue';
 // import CreateCommentForm from '@/components/Comment/CreateCommentForm.vue';
 // import GetCommentsForm from '@/components/Comment/GetCommentsForm.vue';
+import FreetForCommentComponent from '@/components/Comment/FreetForCommentComponent.vue';
 import FreetComponent from '@/components/Freet/FreetComponent.vue';
-import CreateFreetForm from '@/components/Freet/CreateFreetForm.vue';
-import GetFreetsForm from '@/components/Freet/GetFreetsForm.vue';
 
 export default {
-  name: 'CommentPage',
-  components: {FreetComponent, GetFreetsForm, CreateFreetForm}, 
-  props: {
-    freet: {
-        type: Object,
-        required: true
-      }
-  }
-//   mounted() {
-//     this.$refs.getCommentForm.submit();
-//   }
+    name: 'CommentsPage',
+    components: {FreetComponent, CommentComponent, FreetForCommentComponent}, 
+    props: {
+    // freet: {
+    //     type: Object,
+    //     required: true
+    //     }
+    },
+    data() {
+        return {
+            comments: [],
+            freet: {}
+        }
+    },
+    created() {
+        this.getComments();
+    },
+    mounted(){
+        this.getFreet();
+    },
+    methods: {
+        async getComments(){
+            try {
+                console.log("HERE", this.$route.params);
+                console.log(this.$route.params.freet);
+                const r = await fetch(`/api/comments/?freetId=${this.$route.params.freetId}`);
+                if (!r.ok) {
+                // If response is not okay, we throw an error and enter the catch block
+                const res = await r.json();
+                throw new Error(res.error);
+                }
+                const comment = await r.text();
+                this.comments =JSON.parse(comment);
+
+
+        } catch (e) {
+            console.log("caught", e);
+            this.$set(this.alerts, e, 'error');
+            setTimeout(() => this.$delete(this.alerts, e), 3000);
+        }   
+    },
+    async getFreet(){
+        try {
+            console.log("attempting to get freet")
+            const freetId = this.$route.params.freetId;
+            const r = await fetch(`/api/freets/?freetId=${this.$route.params.freetId}`);
+            console.log(r);
+            if (!r.ok) {
+                const res = await r.json();
+                throw new Error(res.error);
+            }
+            const freet = await r.text();
+            console.log("freet", freet);
+            this.freet = JSON.parse(freet);
+            }
+            catch (e) {
+            console.log("caught", e);
+            this.$set(this.alerts, e, 'error');
+            setTimeout(() => this.$delete(this.alerts, e), 3000);
+        }   
+        console.log("we now set this.freet to be", this.freet)
+
+    }
+        }
 };
 </script>
 
@@ -78,4 +135,18 @@ section .scrollbox {
   padding: 3%;
   overflow-y: scroll;
 }
+
+.freet {
+    border: 1px solid #111;
+    padding: 20px;
+    position: relative;
+}
+
+.content{
+    text-size-adjust: .5;
+}
+
+/* .comments{
+    font-size: medium;
+} */
 </style>

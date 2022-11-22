@@ -29,7 +29,7 @@ router.get(
   '/',
   async (req: Request, res: Response, next: NextFunction) => {
     // Check if authorId query parameter was supplied
-    if (req.query.author !== undefined) {
+    if (req.query.author !== undefined || req.query.freetId !== undefined) {
       next();
       return;
     }
@@ -37,6 +37,17 @@ router.get(
     const allFreets = await FreetCollection.findAll();
     const response = allFreets.map(util.constructFreetResponse);
     res.status(200).json(response);
+  },
+  async (req: Request, res: Response, next: NextFunction) => {
+    if (req.query.author !== undefined) {
+      next();
+      return;
+    }
+    //case: we were given a freetId
+    const freetId = req.query.freetId as string;
+    const freet = await FreetCollection.findOne(freetId);
+    const response = util.constructFreetResponse(freet);
+    res.status(200).json(response)
   },
   [
     userValidator.isAuthorExists
