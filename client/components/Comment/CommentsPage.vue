@@ -22,13 +22,15 @@
         
       </header>
     </section>
-    content is {{content}}
+
     <section class= "form">
-      Post New Comment
+      <h3>Comment on this Freet</h3>
+      
+      Content
       <textarea v-model="content">
           
       </textarea>
-      <button @click="postComment">Post Comment</button>
+      <button class="button" @click="postComment">Post Comment</button>
 
       <!-- <button @click ="submitComment"
       type="submit"
@@ -186,9 +188,10 @@ section .scrollbox {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin: 14px;
   position: relative;
-  background-color: #FED2FE;
+  /* background-color: #FED2FE; */
+  background-color: #D2FEFE;
   border-radius: 15px;
 }
 

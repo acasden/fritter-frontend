@@ -49,6 +49,7 @@ main {
   font-size: large;
 }
 
+
 .alerts {
     position: absolute;
     z-index: 99;
@@ -58,6 +59,17 @@ main {
     transform: translate(-50%, 10%);
     width: 100%;
     text-align: center;
+}
+
+.button{
+  /* background-color: #000000; Green */
+  /* border: none; */
+  /* color: white; */
+  text-align: center;
+  border-radius: 40;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
 }
 
 .alerts article {

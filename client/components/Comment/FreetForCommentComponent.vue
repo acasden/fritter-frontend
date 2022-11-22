@@ -58,8 +58,18 @@
       border: 1px solid #111;
       padding: 20px;
       position: relative;
+      background-color: #FED2FE;
+      border-radius: 15px;
+  }
+
+  .author{
+    font-size:large;
+    margin: 0%;
+    
   }
   .content{
+    font-size:large;
+    font-weight: 100;
     text-size-adjust: .5;
 }
 

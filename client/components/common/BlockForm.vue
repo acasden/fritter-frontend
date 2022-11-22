@@ -30,7 +30,8 @@
     <article v-else>
       <p>{{ content }}</p>
     </article>
-    <button
+    <button 
+      class="button"
       type="submit"
     >
       {{ title }}

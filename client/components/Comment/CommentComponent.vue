@@ -5,17 +5,18 @@
       class="comment"
     >
       <header>
-        <h3 class="author">
-        @{{ comment.author }}
-      </h3>
-        <div
+        <div 
           v-if="$store.state.username === comment.author"
           class="actions"
         >
-          <button @click="deleteComment">
+          <button @click="deleteComment" >
             🗑️ Delete
           </button>
         </div>
+        <h3 class="author">
+        @{{ comment.author }}
+      </h3>
+        
       </header>
 
       <p>
@@ -110,9 +111,17 @@
   
   <style scoped>
   .comment {
-      border: 1px solid #111;
-      padding: 20px;
-      position: relative;
+    background-color: #FED2FE;
+    border: 1px solid #111;
+    border-radius: 15px;
+    padding: 20px;
+    position: relative;
+    margin: 2px;
+    color: rgb(0, 0, 0);
+  }
+
+  .actions{
+    float: right;
   }
   </style>
   

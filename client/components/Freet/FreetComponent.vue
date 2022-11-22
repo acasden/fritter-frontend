@@ -13,7 +13,7 @@
         v-if="$store.state.username === freet.author"
         class="actions"
       >
-        <button @click="deleteFreet">
+        <button class="button" @click="deleteFreet">
           🗑️ Delete Freet
         </button>
       </div>
@@ -57,6 +57,7 @@
       v-slot="{ navigate }">
       <button 
         @click = "navigate" 
+        class="button"
         role = "link">
         View Comments
       </button> </router-link>
@@ -199,7 +200,6 @@ export default {
     position: relative;
     margin: 2px;
     color: rgb(0, 0, 0);
-    font-size: larger;
     /* -webkit-text-stroke-width: 0.5px; */
     /* -webkit-text-stroke-color: rgb(255, 255, 255); */
 
