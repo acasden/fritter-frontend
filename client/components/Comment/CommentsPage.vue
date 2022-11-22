@@ -19,8 +19,23 @@
             
           </h2>
         </div>
+        
       </header>
     </section>
+    content is {{content}}
+    <section class= "form">
+      Post New Comment
+      <textarea v-model="content">
+          
+      </textarea>
+      <button @click="postComment">Post Comment</button>
+
+      <!-- <button @click ="submitComment"
+      type="submit"
+    >
+      Post Comment
+    </button> -->
+    </section >
       <!-- UNDER HERE IS WHERE WE ACTUALLY VIEW THE FREETS -->
       <section 
       >
@@ -41,6 +56,7 @@
 
 <script>
 import CommentComponent from '@/components/Comment/CommentComponent.vue';
+import PostCommentForm from '@/components/Comment/PostCommentForm.vue';
 // import CreateCommentForm from '@/components/Comment/CreateCommentForm.vue';
 // import GetCommentsForm from '@/components/Comment/GetCommentsForm.vue';
 import FreetForCommentComponent from '@/components/Comment/FreetForCommentComponent.vue';
@@ -48,7 +64,7 @@ import FreetComponent from '@/components/Freet/FreetComponent.vue';
 
 export default {
     name: 'CommentsPage',
-    components: {FreetComponent, CommentComponent, FreetForCommentComponent}, 
+    components: {FreetComponent, CommentComponent, FreetForCommentComponent, PostCommentForm}, 
     props: {
     // freet: {
     //     type: Object,
@@ -58,9 +74,11 @@ export default {
     data() {
         return {
             comments: [],
-            freet: {}
+            freet: {},
+            content: ""
         }
     },
+
     created() {
         this.getComments();
     },
@@ -68,6 +86,32 @@ export default {
         this.getFreet();
     },
     methods: {
+        async postComment(){
+          try{
+          console.log("posting comment", this.content);
+          const freetId = this.freet._id;
+          const fields = {content: this.content, freetId};
+          console.log(fields);
+          const response = await fetch('/api/comments', {method: 'POST', body: JSON.stringify(fields), headers: {'Content-Type': 'application/json'}});
+          console.log("response", response);
+
+          if (!response.ok) {
+                // If response is not okay, we throw an error and enter the catch block
+                console.log("okay");
+                const res = await response.json();
+                throw new Error(res.error);
+                
+                }
+          this.content="";
+          this.getComments();
+          }catch (e) {
+            console.log("caught", e);
+            this.$set(this.alerts, e, 'error');
+            setTimeout(() => this.$delete(this.alerts, e), 3000);
+        }   
+
+          
+        },
         async getComments(){
             try {
                 console.log("HERE", this.$route.params);
@@ -136,14 +180,25 @@ section .scrollbox {
   overflow-y: scroll;
 }
 
-.freet {
-    border: 1px solid #111;
-    padding: 20px;
-    position: relative;
+.form {
+  border: 1px solid #111;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  position: relative;
+  background-color: #FED2FE;
+  border-radius: 15px;
 }
+
 
 .content{
     text-size-adjust: .5;
+}
+
+.comment_poster{
+  border: 1px;
 }
 
 /* .comments{
